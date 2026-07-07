@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
           trimmed.endsWith(".mkv")
         ) {
           filename = trimmed
-          entry.progress.filename = filename
+          entry.progress.filename = path.basename(filename)
           entry.progress.status = "downloading"
         }
 
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
         const destMatch = trimmed.match(/Destination:\s+(.+)/)
         if (destMatch) {
           filename = destMatch[1].trim()
-          entry.progress.filename = filename.split("\\").pop() || filename
+          entry.progress.filename = path.basename(filename)
         }
 
         if (trimmed.startsWith("ERROR:")) {
