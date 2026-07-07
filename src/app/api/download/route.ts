@@ -143,6 +143,7 @@ export async function POST(request: NextRequest) {
     const args: string[] = [
       "--ignore-config", "--no-warnings", "--newline",
       "--impersonate", "chrome-124",
+      "--extractor-args", "youtube:player_client=tv",
       "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
       "-P", downloadDir,
       ...ffmpegArgs,
