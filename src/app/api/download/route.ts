@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { spawn } from "child_process"
+import { spawn, execSync } from "child_process"
 import { existsSync, mkdirSync, createReadStream, statSync, readdirSync } from "fs"
 import path from "path"
 import type { DownloadProgress } from "@/lib/types"
@@ -118,8 +118,14 @@ export async function POST(request: NextRequest) {
     const downloadDir = DOWNLOAD_DIR
     if (!existsSync(downloadDir)) mkdirSync(downloadDir, { recursive: true })
 
-    const ffmpegPath = path.join(path.dirname(YTDLP_PATH), "ffmpeg.exe")
-    const hasFfmpeg = existsSync(ffmpegPath)
+    let ffmpegPath = path.join(path.dirname(YTDLP_PATH), "ffmpeg.exe")
+    let hasFfmpeg = existsSync(ffmpegPath)
+    if (!hasFfmpeg) {
+      try {
+        const whichFfmpeg = execSync(process.platform === "win32" ? "where ffmpeg" : "which ffmpeg", { encoding: "utf8", timeout: 3000 }).trim().split("\n")[0]
+        if (whichFfmpeg) { ffmpegPath = whichFfmpeg; hasFfmpeg = true }
+      } catch { /* ffmpeg not in PATH */ }
+    }
     const ffmpegArgs = hasFfmpeg ? ["--ffmpeg-location", ffmpegPath] : []
 
     const args: string[] = [
@@ -250,7 +256,7 @@ export async function POST(request: NextRequest) {
         // Fallback: scan download dir for most recent file
         if (!entry.filePath && existsSync(downloadDir)) {
           const files = readdirSync(downloadDir)
-            .filter((f: string) => f.endsWith(".mp4") || f.endsWith(".mp3"))
+            .filter((f: string) => /\.(mp4|mp3|webm|m4a|mkv)$/i.test(f))
             .map((f: string) => ({ name: f, time: statSync(path.join(downloadDir, f)).mtimeMs }))
             .sort((a: any, b: any) => b.time - a.time)
           if (files.length > 0) entry.filePath = path.join(downloadDir, files[0].name)
@@ -308,7 +314,7 @@ export async function GET(request: NextRequest) {
       let filePath = entry.filePath
       if (!filePath && existsSync(downloadDir)) {
         const files = readdirSync(downloadDir)
-          .filter((f: string) => f.endsWith(".mp4") || f.endsWith(".mp3"))
+          .filter((f: string) => /\.(mp4|mp3|webm|m4a|mkv)$/i.test(f))
           .map((f: string) => ({ name: f, time: statSync(path.join(downloadDir, f)).mtimeMs }))
           .sort((a: any, b: any) => b.time - a.time)
         if (files.length > 0) filePath = path.join(downloadDir, files[0].name)
