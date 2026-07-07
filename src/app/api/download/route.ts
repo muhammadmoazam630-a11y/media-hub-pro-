@@ -34,7 +34,18 @@ interface DownloadEntry {
 const downloads = new Map<string, DownloadEntry>()
 
 function sanitizeUrl(url: string): string {
-  return url.replace(/[<>"'`\x00-\x1f\x7f]/g, "").trim()
+  const cleaned = url.replace(/[<>"'`\x00-\x1f\x7f]/g, "").trim()
+  try {
+    const parsed = new URL(cleaned)
+    if (parsed.hostname.includes("youtu")) {
+      parsed.searchParams.delete("si")
+      parsed.searchParams.delete("feature")
+      parsed.searchParams.delete("fbclid")
+    }
+    return parsed.toString()
+  } catch {
+    return cleaned
+  }
 }
 
 function isValidMediaUrl(url: string): boolean {
