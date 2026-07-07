@@ -1,6 +1,6 @@
 import os from "os"
 import path from "path"
-import { existsSync, statSync, writeFileSync } from "fs"
+import { existsSync, statSync, writeFileSync, chmodSync } from "fs"
 
 const isWin = os.platform() === "win32"
 
@@ -17,6 +17,7 @@ export function getCookiesFile(): string {
     try {
       const buf = Buffer.from(base64, "base64")
       writeFileSync(targetPath, buf)
+      chmodSync(targetPath, 0o444)
       return targetPath
     } catch {
       // fall through

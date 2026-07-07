@@ -136,8 +136,9 @@ export async function POST(request: NextRequest) {
       ...ffmpegArgs,
     ]
     const cookiesFile = getCookiesFile()
-    if (cookiesFile) args.push("--cookies", cookiesFile)
-    if (process.env.YOUTUBE_EMAIL) {
+    if (cookiesFile) {
+      args.push("--cookies", cookiesFile)
+    } else if (process.env.YOUTUBE_EMAIL) {
       args.push("--username", process.env.YOUTUBE_EMAIL)
       args.push("--password", process.env.YOUTUBE_PASSWORD || "")
     }

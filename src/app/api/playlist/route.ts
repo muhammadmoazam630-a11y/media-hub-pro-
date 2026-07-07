@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const cookiesFile = getCookiesFile()
     const hasCookies = cookiesFile.length > 0
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
-    const authArgs = process.env.YOUTUBE_EMAIL ? `--username "${process.env.YOUTUBE_EMAIL}" --password "${process.env.YOUTUBE_PASSWORD || ""}"` : ""
+    const authArgs = !hasCookies && process.env.YOUTUBE_EMAIL ? `--username "${process.env.YOUTUBE_EMAIL}" --password "${process.env.YOUTUBE_PASSWORD || ""}"` : ""
 
     // Get playlist info with flat list
     const output = execSync(
