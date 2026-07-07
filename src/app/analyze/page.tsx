@@ -120,7 +120,6 @@ function AnalyzeContent() {
     try {
       const { downloadId: realId } = await startDownload(url, mode, selectedQuality)
       setRealDownloadId(realId)
-      const savePath = `Downloads\\MediaHub Downloads\\${mediaInfo?.title || "media"}.${ext}`
       setDownloadProgress({ percent: 1, speed: "", eta: "", status: "downloading", filename: `${mediaInfo?.title || "media"}.${ext}` })
 
       const poll = setInterval(async () => {
@@ -130,10 +129,10 @@ function AnalyzeContent() {
 
           if (status.status === "complete") {
             clearInterval(poll)
-            setDownloadProgress({ percent: 100, speed: "0 B/s", eta: "0s", status: "complete", savePath, filename: status.filename })
-            updateProgress(downloadId, { percent: 100, speed: "0 B/s", eta: "0s", status: "complete", savePath, filename: status.filename })
+            setDownloadProgress({ percent: 100, speed: "0 B/s", eta: "0s", status: "complete", filename: status.filename })
+            updateProgress(downloadId, { percent: 100, speed: "0 B/s", eta: "0s", status: "complete", filename: status.filename })
             setDownloading(false)
-            toast.success("Download complete! Saved to " + savePath)
+            toast.success("Download complete!")
           } else if (status.status === "error") {
             clearInterval(poll)
             setDownloadProgress((prev) => ({ percent: prev?.percent || 0, speed: prev?.speed || "", eta: prev?.eta || "", status: "error", filename: prev?.filename, error: status.error }))
@@ -413,9 +412,16 @@ function AnalyzeContent() {
                           </audio>
                         </div>
                       )}
+                      <a
+                        href={`/api/download?id=${realDownloadId}&serve=1`}
+                        download
+                        className="flex-1 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-medium text-sm flex items-center justify-center gap-2"
+                      >
+                        <Download className="w-4 h-4" /> Save File
+                      </a>
                       <button
                         onClick={() => setShowProgressModal(false)}
-                        className="flex-1 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-medium text-sm flex items-center justify-center gap-2"
+                        className="flex-1 h-12 rounded-xl border border-white/10 hover:bg-white/10 transition-colors font-medium text-sm flex items-center justify-center gap-2"
                       >
                         <CheckCircle2 className="w-4 h-4" /> Done
                       </button>
