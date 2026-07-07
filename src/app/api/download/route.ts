@@ -124,7 +124,6 @@ export async function POST(request: NextRequest) {
 
     const args: string[] = [
       "--no-warnings", "--newline", "--no-check-certificates",
-      "--extractor-args", "youtube:player_client=ios,web",
       "-P", downloadDir,
       ...ffmpegArgs,
     ]
