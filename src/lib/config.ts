@@ -13,7 +13,7 @@ export const YTDLP_PATH: string =
 export function getCookiesFile(): string {
   const base64 = process.env.COOKIES_BASE64
   if (base64) {
-    const targetPath = path.join(os.tmpdir(), "ytdlp-cookies.txt")
+    const targetPath = path.join(os.tmpdir(), `ytdlp-cookies-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`)
     try {
       const buf = Buffer.from(base64, "base64")
       writeFileSync(targetPath, buf)
