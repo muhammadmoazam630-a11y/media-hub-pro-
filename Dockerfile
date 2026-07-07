@@ -1,9 +1,9 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine
 RUN apk add --no-cache ffmpeg python3 py3-pip
-RUN pip3 install --break-system-packages yt-dlp
+RUN pip3 install yt-dlp
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 COPY . .
 RUN npm run build
 EXPOSE 3000
