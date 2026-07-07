@@ -130,15 +130,14 @@ export async function POST(request: NextRequest) {
 
     const args: string[] = [
       "--no-warnings", "--newline", "--no-check-certificates",
-      "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-      "--extractor-args", "youtube:skip=webpage",
+      "--user-agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+      "--extractor-args", "youtube:player_client=android;player_skip=webpage,configs",
       "-P", downloadDir,
       ...ffmpegArgs,
     ]
     const cookiesFile = getCookiesFile()
-    if (cookiesFile) {
-      args.push("--cookies", cookiesFile)
-    } else if (process.env.YOUTUBE_EMAIL) {
+    if (cookiesFile) args.push("--cookies", cookiesFile)
+    if (process.env.YOUTUBE_EMAIL) {
       args.push("--username", process.env.YOUTUBE_EMAIL)
       args.push("--password", process.env.YOUTUBE_PASSWORD || "")
     }
