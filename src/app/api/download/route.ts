@@ -146,12 +146,12 @@ export async function POST(request: NextRequest) {
       if (qualityVal && qualityVal > 0) {
         args.push(
           "-f",
-          `bestvideo[height<=${qualityVal}][vcodec^=avc1]+${audioPref}/bestvideo[height<=${qualityVal}]+${audioPref}/best[height<=${qualityVal}]`,
+          `bestvideo[height<=${qualityVal}]+${audioPref}/bestvideo[height<=${qualityVal}]+${audioPref}/best[height<=${qualityVal}]`,
           ...sortPref,
           ...remuxPref,
         )
       } else {
-        const fallbackFormat = formatId === "video" ? "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best" : formatId
+        const fallbackFormat = formatId === "video" ? "bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best" : formatId
         args.push("-f", fallbackFormat, ...sortPref, ...remuxPref)
       }
     }
