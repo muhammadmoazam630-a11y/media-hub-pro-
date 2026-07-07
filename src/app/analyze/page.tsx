@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect, useCallback } from "react"
+import { Suspense, useState, useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Download, Pause, Play, X, CheckCircle2, AlertCircle, Music, Film } from "lucide-react"
@@ -56,6 +56,7 @@ function AnalyzeContent() {
   const [paused, setPaused] = useState(false)
   const [showProgressModal, setShowProgressModal] = useState(false)
   const [realDownloadId, setRealDownloadId] = useState<string | null>(null)
+  const dlRef = useRef<HTMLAnchorElement>(null)
 
   const addDownload = useDownloadStore((s) => s.addDownload)
   const updateProgress = useDownloadStore((s) => s.updateProgress)
@@ -94,6 +95,12 @@ function AnalyzeContent() {
   useEffect(() => {
     setSelectedFps(null)
   }, [mode, selectedQuality])
+
+  useEffect(() => {
+    if (downloadProgress?.status === "complete" && dlRef.current) {
+      dlRef.current.click()
+    }
+  }, [downloadProgress?.status])
 
   async function handleDownload() {
     if (!selectedQuality) {
@@ -398,30 +405,19 @@ function AnalyzeContent() {
                   )}
                   {downloadProgress.status === "complete" && (
                     <>
-                      {mode === "video" && realDownloadId && (
-                        <div className="w-full mb-3 rounded-xl overflow-hidden bg-black">
-                          <video controls className="w-full max-h-64" preload="metadata">
-                            <source src={`/api/download?id=${realDownloadId}&serve=1`} type="video/mp4" />
-                          </video>
-                        </div>
+                      {realDownloadId && (
+                        <a
+                          ref={dlRef}
+                          href={`/api/download?id=${realDownloadId}&serve=1`}
+                          download
+                          className="w-full h-12 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-medium text-sm flex items-center justify-center gap-2"
+                        >
+                          <Download className="w-4 h-4" /> Download File
+                        </a>
                       )}
-                      {mode === "audio" && realDownloadId && (
-                        <div className="w-full mb-3">
-                          <audio controls className="w-full" preload="metadata">
-                            <source src={`/api/download?id=${realDownloadId}&serve=1`} type="audio/mpeg" />
-                          </audio>
-                        </div>
-                      )}
-                      <a
-                        href={`/api/download?id=${realDownloadId}&serve=1`}
-                        download
-                        className="flex-1 h-12 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-medium text-sm flex items-center justify-center gap-2"
-                      >
-                        <Download className="w-4 h-4" /> Save File
-                      </a>
                       <button
                         onClick={() => setShowProgressModal(false)}
-                        className="flex-1 h-12 rounded-xl border border-white/10 hover:bg-white/10 transition-colors font-medium text-sm flex items-center justify-center gap-2"
+                        className="w-full h-12 rounded-xl border border-white/10 hover:bg-white/10 transition-colors font-medium text-sm flex items-center justify-center gap-2"
                       >
                         <CheckCircle2 className="w-4 h-4" /> Done
                       </button>
