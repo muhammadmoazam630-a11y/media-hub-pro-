@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { existsSync, statSync, readdirSync } from "fs"
+import { existsSync, statSync, readdirSync, readFileSync } from "fs"
 import os from "os"
 import path from "path"
 
@@ -11,6 +11,9 @@ export async function GET() {
   const cookiesTmpPath = path.join(tmpDir, "ytdlp-cookies.txt")
   const cookiesTmpExists = existsSync(cookiesTmpPath)
   const cookiesTmpSize = cookiesTmpExists ? statSync(cookiesTmpPath).size : 0
+
+  let cookieContent = ""
+  try { cookieContent = readFileSync(cookiesTmpPath, "utf-8").substring(0, 1000) } catch {}
 
   return NextResponse.json({
     platform: os.platform(),
@@ -24,6 +27,7 @@ export async function GET() {
     cookiesTmpExists,
     cookiesTmpSize,
     tmpFiles: tmpFiles.filter(f => f.includes("cookie")),
+    cookieContent,
     nodeEnv: process.env.NODE_ENV,
     railwayEnv: process.env.RAILWAY_ENVIRONMENT_NAME || "not-railway",
   })
