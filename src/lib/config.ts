@@ -1,6 +1,6 @@
 import os from "os"
 import path from "path"
-import { writeFileSync } from "fs"
+import { existsSync, statSync, writeFileSync } from "fs"
 
 const isWin = os.platform() === "win32"
 
@@ -10,27 +10,29 @@ export const YTDLP_PATH: string =
     ? path.join(os.homedir(), "AppData", "Local", "yt-dlp", "yt-dlp.exe")
     : "yt-dlp")
 
-// Write cookies from base64 env var if provided (for Railway deployment)
-const COOKIES_BASE64 = process.env.COOKIES_BASE64 || ""
-const ENV_COOKIES_FILE = process.env.COOKIES_FILE || ""
-let cookiesFilePath = ENV_COOKIES_FILE
+export function getCookiesFile(): string {
+  const envPath = process.env.COOKIES_FILE || ""
+  if (envPath && existsSync(envPath) && statSync(envPath).size > 0) return envPath
 
-if (COOKIES_BASE64) {
-  const targetPath = "/app/cookies.txt"
-  try {
-    const buf = Buffer.from(COOKIES_BASE64, "base64")
-    writeFileSync(targetPath, buf)
-    cookiesFilePath = targetPath
-  } catch {
-    cookiesFilePath = ENV_COOKIES_FILE
+  const base64 = process.env.COOKIES_BASE64
+  if (base64) {
+    const targetPath = path.join(os.tmpdir(), "ytdlp-cookies.txt")
+    try {
+      const buf = Buffer.from(base64, "base64")
+      writeFileSync(targetPath, buf)
+      return targetPath
+    } catch {
+      // fall through
+    }
   }
-}
 
-export const COOKIES_FILE: string =
-  cookiesFilePath ||
-  (isWin
-    ? path.join(os.homedir(), "AppData", "Local", "yt-dlp", "cookies.txt")
-    : "")
+  if (isWin) {
+    const winPath = path.join(os.homedir(), "AppData", "Local", "yt-dlp", "cookies.txt")
+    if (existsSync(winPath) && statSync(winPath).size > 0) return winPath
+  }
+
+  return ""
+}
 
 export const DOWNLOAD_DIR: string =
   process.env.DOWNLOAD_DIR ||

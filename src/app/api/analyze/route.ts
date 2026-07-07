@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { execSync } from "child_process"
-import { existsSync, statSync } from "fs"
+
 import type { MediaInfo, Format } from "@/lib/types"
-import { YTDLP_PATH, COOKIES_FILE } from "@/lib/config"
+import { YTDLP_PATH, getCookiesFile } from "@/lib/config"
 
 const SUPPORTED_DOMAINS = [
   "youtube.com",
@@ -135,8 +135,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const hasCookies = existsSync(COOKIES_FILE) && statSync(COOKIES_FILE).size > 0
-    const cookiesArg = hasCookies ? `--cookies "${COOKIES_FILE}"` : ""
+    const cookiesFile = getCookiesFile()
+    const hasCookies = cookiesFile.length > 0
+    const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
     const output = execSync(
       `"${YTDLP_PATH}" --dump-json --no-warnings ${cookiesArg} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 30000 }

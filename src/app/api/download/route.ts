@@ -9,7 +9,7 @@ import {
   decrementActiveUsers,
   addRecentError,
 } from "@/lib/stats"
-import { YTDLP_PATH, COOKIES_FILE, DOWNLOAD_DIR } from "@/lib/config"
+import { YTDLP_PATH, getCookiesFile, DOWNLOAD_DIR } from "@/lib/config"
 
 const SUPPORTED_DOMAINS = [
   "youtube.com",
@@ -127,7 +127,8 @@ export async function POST(request: NextRequest) {
       "-P", downloadDir,
       ...ffmpegArgs,
     ]
-    if (existsSync(COOKIES_FILE) && statSync(COOKIES_FILE).size > 0) args.push("--cookies", COOKIES_FILE)
+    const cookiesFile = getCookiesFile()
+    if (cookiesFile) args.push("--cookies", cookiesFile)
     if (isAudio) {
       const audioFormat = formatId === "audio" ? "bestaudio/best" : formatId
       args.push("-x", "--audio-format", "mp3", "--audio-quality", "0", "-f", audioFormat)

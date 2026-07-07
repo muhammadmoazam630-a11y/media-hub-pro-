@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { execSync } from "child_process"
-import { existsSync, statSync } from "fs"
+
 import type { PlaylistInfo, PlaylistVideo } from "@/lib/types"
-import { YTDLP_PATH, COOKIES_FILE } from "@/lib/config"
+import { YTDLP_PATH, getCookiesFile } from "@/lib/config"
 
 const SUPPORTED_DOMAINS = [
   "youtube.com", "youtu.be", "vimeo.com", "dailymotion.com",
@@ -57,8 +57,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "URL is not a playlist" }, { status: 400 })
     }
 
-    const hasCookies = existsSync(COOKIES_FILE) && statSync(COOKIES_FILE).size > 0
-    const cookiesArg = hasCookies ? `--cookies "${COOKIES_FILE}"` : ""
+    const cookiesFile = getCookiesFile()
+    const hasCookies = cookiesFile.length > 0
+    const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
 
     // Get playlist info with flat list
     const output = execSync(
