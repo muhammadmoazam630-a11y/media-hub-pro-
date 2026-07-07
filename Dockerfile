@@ -1,6 +1,6 @@
 FROM node:20-alpine
 RUN apk add --no-cache ffmpeg python3 py3-pip
-RUN pip3 install --break-system-packages --upgrade yt-dlp
+RUN pip3 install --break-system-packages --upgrade --force-reinstall yt-dlp
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
