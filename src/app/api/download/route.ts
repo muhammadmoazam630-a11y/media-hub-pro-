@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     } else {
       const qualityVal = quality ? parseInt(quality) : undefined
       const audioPref = "bestaudio[ext=m4a]/bestaudio"
-      const sortPref = ["-S", "vcodec:avc1:vp9:av01,res,br"]
+      const sortPref = ["-S", "vcodec:avc1:vp9:av01,res,br,fps"]
       const remuxPref = hasFfmpeg ? ["--recode-video", "mp4"] : []
       if (qualityVal && qualityVal > 0) {
         args.push(
