@@ -11,9 +11,6 @@ export const YTDLP_PATH: string =
     : "yt-dlp")
 
 export function getCookiesFile(): string {
-  const envPath = process.env.COOKIES_FILE || ""
-  if (envPath && existsSync(envPath) && statSync(envPath).size > 0) return envPath
-
   const base64 = process.env.COOKIES_BASE64
   if (base64) {
     const targetPath = path.join(os.tmpdir(), "ytdlp-cookies.txt")

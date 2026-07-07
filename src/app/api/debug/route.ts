@@ -13,7 +13,12 @@ export async function GET() {
   const cookiesTmpSize = cookiesTmpExists ? statSync(cookiesTmpPath).size : 0
 
   let cookieContent = ""
-  try { cookieContent = readFileSync(cookiesTmpPath, "utf-8").substring(0, 1000) } catch {}
+  let cookieLines = 0
+  try {
+    const full = readFileSync(cookiesTmpPath, "utf-8")
+    cookieContent = full.substring(0, 2000)
+    cookieLines = full.split("\n").filter(l => l.trim() && !l.startsWith("#")).length
+  } catch {}
 
   return NextResponse.json({
     platform: os.platform(),
@@ -28,6 +33,7 @@ export async function GET() {
     cookiesTmpSize,
     tmpFiles: tmpFiles.filter(f => f.includes("cookie")),
     cookieContent,
+    cookieLines,
     nodeEnv: process.env.NODE_ENV,
     railwayEnv: process.env.RAILWAY_ENVIRONMENT_NAME || "not-railway",
   })
