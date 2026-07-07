@@ -319,11 +319,12 @@ export async function GET(request: NextRequest) {
           const stream = createReadStream(filePath)
           const ext = path.extname(filePath).toLowerCase()
           const contentType = ext === ".mp3" ? "audio/mpeg" : "video/mp4"
+          const fileName = path.basename(filePath)
           return new NextResponse(stream as any, {
             headers: {
               "Content-Type": contentType,
               "Content-Length": stat.size.toString(),
-              "Content-Disposition": `inline; filename="media${ext}"`,
+              "Content-Disposition": `attachment; filename="${fileName}"`,
             },
           })
         } catch {
