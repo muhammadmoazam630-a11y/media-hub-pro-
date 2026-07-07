@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Get playlist info with flat list
     const output = execSync(
-      `"${YTDLP_PATH}" --dump-json --flat-playlist --no-warnings --no-check-certificates --extractor-args "youtube:player_client=web,web_creator" --ignore-errors ${cookiesArg} ${JSON.stringify(url)}`,
+      `"${YTDLP_PATH}" --dump-json --flat-playlist --no-warnings --no-check-certificates --extractor-args "youtube:player_client=ios,web_creator" --ignore-errors ${cookiesArg} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
     )
 
