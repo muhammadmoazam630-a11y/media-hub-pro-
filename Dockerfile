@@ -1,6 +1,6 @@
 FROM node:20-alpine
 RUN apk add --no-cache ffmpeg python3 py3-pip curl
-RUN pip3 install --break-system-packages --no-cache-dir --upgrade yt-dlp curl_cffi && yt-dlp --version
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && chmod +x /usr/local/bin/yt-dlp && /usr/local/bin/yt-dlp --version && /usr/local/bin/yt-dlp --list-impersonate-targets
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
