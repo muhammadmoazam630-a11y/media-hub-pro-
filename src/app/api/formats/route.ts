@@ -117,14 +117,8 @@ export async function POST(request: NextRequest) {
     const cookiesFile = getCookiesFile()
     const hasCookies = cookiesFile.length > 0
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
-    const extractorArg = hasCookies
-      ? "youtube:skip=webpage"
-      : "youtube:player_client=android;player_skip=webpage,configs"
-    const userAgent = hasCookies
-      ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-      : "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
     const output = execSync(
-      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --user-agent "${userAgent}" --extractor-args "${extractorArg}" ${cookiesArg} ${JSON.stringify(url)}`,
+      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --impersonate "chrome-125" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
     )
 

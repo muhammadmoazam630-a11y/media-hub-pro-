@@ -129,15 +129,10 @@ export async function POST(request: NextRequest) {
     const ffmpegArgs = hasFfmpeg ? ["--ffmpeg-location", ffmpegPath] : []
 
     const cookiesFile = getCookiesFile()
-    const extractorArgs = cookiesFile
-      ? "youtube:skip=webpage"
-      : "youtube:player_client=android;player_skip=webpage,configs"
     const args: string[] = [
       "--no-warnings", "--newline", "--no-check-certificates",
-      "--user-agent", cookiesFile
-        ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-        : "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
-      "--extractor-args", extractorArgs,
+      "--impersonate", "chrome-125",
+      "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
       "-P", downloadDir,
       ...ffmpegArgs,
     ]
