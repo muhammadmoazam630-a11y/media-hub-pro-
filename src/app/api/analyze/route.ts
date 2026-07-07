@@ -137,6 +137,7 @@ export async function POST(request: NextRequest) {
 
     const cookiesFile = getCookiesFile()
     const hasCookies = cookiesFile.length > 0
+    console.log("[ANALYZE] cookiesFile:", cookiesFile, "hasCookies:", hasCookies)
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
     const output = execSync(
       `"${YTDLP_PATH}" --dump-json --no-warnings ${cookiesArg} ${JSON.stringify(url)}`,
