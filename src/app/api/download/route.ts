@@ -232,10 +232,24 @@ export async function POST(request: NextRequest) {
         entry.progress.status = "complete"
         entry.progress.speed = ""
         entry.progress.eta = ""
-        if (filename && existsSync(filename)) entry.filePath = filename
-        else if (filename) {
-          const merged = filename.replace(/\.f\d+\.\w+$/, ".mp4")
-          if (existsSync(merged)) entry.filePath = merged
+
+        // Try to find the downloaded file
+        if (filename) {
+          const fullPath = path.resolve(downloadDir, filename)
+          const mergedPath = path.resolve(downloadDir, filename.replace(/\.f\d+\.\w+$/, ".mp4"))
+          if (existsSync(fullPath)) entry.filePath = fullPath
+          else if (existsSync(mergedPath)) entry.filePath = mergedPath
+          else if (existsSync(filename)) entry.filePath = filename
+          else if (existsSync(filename.replace(/\.f\d+\.\w+$/, ".mp4"))) entry.filePath = filename.replace(/\.f\d+\.\w+$/, ".mp4")
+        }
+
+        // Fallback: scan download dir for most recent file
+        if (!entry.filePath && existsSync(downloadDir)) {
+          const files = readdirSync(downloadDir)
+            .filter((f: string) => f.endsWith(".mp4") || f.endsWith(".mp3"))
+            .map((f: string) => ({ name: f, time: statSync(path.join(downloadDir, f)).mtimeMs }))
+            .sort((a: any, b: any) => b.time - a.time)
+          if (files.length > 0) entry.filePath = path.join(downloadDir, files[0].name)
         }
       } else if (entry.progress.status !== "error") {
         entry.progress.status = "error"
