@@ -140,16 +140,14 @@ export async function POST(request: NextRequest) {
     console.log("[ANALYZE] cookiesFile:", cookiesFile, "hasCookies:", hasCookies)
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
     let rawOutput: string
-    let stderrOutput = ""
     try {
       rawOutput = execSync(
-        `"${YTDLP_PATH}" --ignore-config --dump-json --verbose --js-runtimes node --extractor-args "youtube:skip=webpage" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
+        `"${YTDLP_PATH}" --ignore-config --dump-json --no-warnings --impersonate "chrome-125" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
         { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
       )
     } catch (e: any) {
-      stderrOutput = e.stderr?.toString() || ""
       if (e.stdout) { rawOutput = e.stdout.toString() }
-      else { return NextResponse.json({ error: "yt-dlp failed", debug: stderrOutput.substring(0, 3000) }, { status: 500 }) }
+      else { throw e }
     }
 
     const data = JSON.parse(rawOutput.trim())
