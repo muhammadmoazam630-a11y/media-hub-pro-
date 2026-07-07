@@ -139,12 +139,18 @@ export async function POST(request: NextRequest) {
     const hasCookies = cookiesFile.length > 0
     console.log("[ANALYZE] cookiesFile:", cookiesFile, "hasCookies:", hasCookies)
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
-    const output = execSync(
-      `"${YTDLP_PATH}" --ignore-config --dump-json --no-warnings --no-check-certificates --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
-      { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
-    )
+    let rawOutput: string
+    try {
+      rawOutput = execSync(
+        `"${YTDLP_PATH}" --ignore-config --dump-json --no-warnings --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
+        { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
+      )
+    } catch (e: any) {
+      if (e.stdout) { rawOutput = e.stdout.toString() }
+      else { throw e }
+    }
 
-    const data = JSON.parse(output.trim())
+    const data = JSON.parse(rawOutput.trim())
 
     const formats: Format[] = (data.formats || [])
       .filter((f: Record<string, unknown>) => f.format_id && f.ext)

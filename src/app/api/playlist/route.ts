@@ -61,12 +61,17 @@ export async function POST(request: NextRequest) {
     const hasCookies = cookiesFile.length > 0
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
 
-    const output = execSync(
-      `"${YTDLP_PATH}" --ignore-config --dump-json --flat-playlist --no-warnings --no-check-certificates --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" --ignore-errors ${cookiesArg} ${JSON.stringify(url)}`,
-      { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
-    )
-
-    const lines = output.trim().split("\n").filter(Boolean)
+    let rawOutput: string
+    try {
+      rawOutput = execSync(
+        `"${YTDLP_PATH}" --ignore-config --dump-json --flat-playlist --no-warnings --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" --ignore-errors ${cookiesArg} ${JSON.stringify(url)}`,
+        { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
+      )
+    } catch (e: any) {
+      if (e.stdout) { rawOutput = e.stdout.toString() }
+      else { throw e }
+    }
+    const lines = rawOutput.trim().split("\n").filter(Boolean)
     if (lines.length === 0) {
       return NextResponse.json({ error: "No videos found in playlist" }, { status: 404 })
     }
