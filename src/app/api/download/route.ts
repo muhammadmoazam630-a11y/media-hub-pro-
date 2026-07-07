@@ -140,6 +140,7 @@ export async function POST(request: NextRequest) {
     const ffmpegArgs = hasFfmpeg ? ["--ffmpeg-location", ffmpegPath] : []
 
     const cookiesFile = getCookiesFile()
+    const proxyUrl = process.env.YTDLP_PROXY || ""
     const args: string[] = [
       "--ignore-config", "--no-warnings", "--newline",
       "--impersonate", "chrome-124",
@@ -148,6 +149,7 @@ export async function POST(request: NextRequest) {
       "-P", downloadDir,
       ...ffmpegArgs,
     ]
+    if (proxyUrl) args.push("--proxy", proxyUrl)
     if (cookiesFile) args.push("--cookies", cookiesFile)
     if (isAudio) {
       const audioFormat = formatId === "audio" ? "bestaudio/best" : formatId

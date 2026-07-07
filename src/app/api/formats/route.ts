@@ -127,11 +127,13 @@ export async function POST(request: NextRequest) {
 
     const cookiesFile = getCookiesFile()
     const hasCookies = cookiesFile.length > 0
+    const proxyUrl = process.env.YTDLP_PROXY || ""
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
+    const proxyArg = proxyUrl ? `--proxy "${proxyUrl}"` : ""
     let rawOutput: string
     try {
       rawOutput = execSync(
-        `"${YTDLP_PATH}" --ignore-config --dump-json --no-warnings --impersonate "chrome-124" --extractor-args "youtube:player_client=tv" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
+        `"${YTDLP_PATH}" --ignore-config --dump-json --no-warnings --impersonate "chrome-124" --extractor-args "youtube:player_client=tv" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${proxyArg} ${JSON.stringify(url)}`,
         { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
       )
     } catch (e: any) {
