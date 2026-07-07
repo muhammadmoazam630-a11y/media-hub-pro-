@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     const hasCookies = cookiesFile.length > 0
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
     const output = execSync(
-      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --extractor-args "youtube:player_client=ios,web_creator" ${cookiesArg} ${JSON.stringify(url)}`,
+      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --extractor-args "youtube:player_client=tv" ${cookiesArg} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
     )
 
