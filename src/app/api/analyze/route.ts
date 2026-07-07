@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     console.log("[ANALYZE] cookiesFile:", cookiesFile, "hasCookies:", hasCookies)
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
     const output = execSync(
-      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --impersonate "chrome-125" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
+      `"${YTDLP_PATH}" --dump-json --no-warnings --no-check-certificates --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" ${cookiesArg} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
     )
 
