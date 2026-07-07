@@ -131,6 +131,10 @@ export async function POST(request: NextRequest) {
     ]
     const cookiesFile = getCookiesFile()
     if (cookiesFile) args.push("--cookies", cookiesFile)
+    if (process.env.YOUTUBE_EMAIL) {
+      args.push("--username", process.env.YOUTUBE_EMAIL)
+      args.push("--password", process.env.YOUTUBE_PASSWORD || "")
+    }
     if (isAudio) {
       const audioFormat = formatId === "audio" ? "bestaudio/best" : formatId
       args.push("-x", "--audio-format", "mp3", "--audio-quality", "0", "-f", audioFormat)

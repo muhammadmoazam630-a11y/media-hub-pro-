@@ -60,10 +60,11 @@ export async function POST(request: NextRequest) {
     const cookiesFile = getCookiesFile()
     const hasCookies = cookiesFile.length > 0
     const cookiesArg = hasCookies ? `--cookies "${cookiesFile}"` : ""
+    const authArgs = process.env.YOUTUBE_EMAIL ? `--username "${process.env.YOUTUBE_EMAIL}" --password "${process.env.YOUTUBE_PASSWORD || ""}"` : ""
 
     // Get playlist info with flat list
     const output = execSync(
-      `"${YTDLP_PATH}" --dump-json --flat-playlist --no-warnings --no-check-certificates --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" --extractor-args "youtube:skip=webpage" --ignore-errors ${cookiesArg} ${JSON.stringify(url)}`,
+      `"${YTDLP_PATH}" --dump-json --flat-playlist --no-warnings --no-check-certificates --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" --extractor-args "youtube:skip=webpage" --ignore-errors ${cookiesArg} ${authArgs} ${JSON.stringify(url)}`,
       { encoding: "utf-8", timeout: 60000, maxBuffer: 1024 * 1024 * 10 }
     )
 
